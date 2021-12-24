@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ extended: false }));
 app.use(cors());
 
-app.post('/create_user', [
+app.post('/creatUser', [
     body('name', 'name shoud of min 3 characters').isLength({ min: 3 }),
     body('email', 'enter a valid email').isEmail(),
     body('username', 'enter a valid username').isLength({ min: 7 }),
@@ -26,26 +26,24 @@ app.post('/create_user', [
         let success = false;
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            return res.status(400).json({ success: false, errors: errors.array() }); //return error + json
+            return res.status(400).json({ success: false, errors: errors.array() });
         }
         try {
-            let salt = await bcrypt.genSalt(10); //generates salt 
+            let salt = await bcrypt.genSalt(10);
             const secPass = await bcrypt.hash(req.body.password, salt);
             let user = await User.create({
                 name: req.body.name,
                 email: req.body.email,
                 password: secPass
             })
-            //setting up authToken
             const data = {
                 user: {
                     id: user.id
                 }
             }
-            //auth token is generated using data and secret string
             const authToken = jwt.sign(data, process.env.JWT_SECRET);
             success = true;
-            res.json({ success: true, authToken });//here using es6 authtoken is being send
+            res.json({ success: true, authToken });
         }
         catch (error) {
             res.status(500).send('some error occured,' + error.message);
@@ -61,15 +59,12 @@ app.post('/login', [
     if (!errors.isEmpty()) {
         return res.status(400).json({ success: false, errors: errors.array() });
     }
-    const { email, password } = req.body; //destructuring email and pass from req.body
+    const { email, password } = req.body;
     try {
-        // finding user from req.body.email from database
         let user = await User.findOne({ email });
         if (!user) return res.status(400).send({ success: false, error: 'Invalid Credentials' });
-        //after finding user, we are verifying req.body.password(hash) from password hash from database
         let passCheck = await bcrypt.compare(password, user.password);
         if (!passCheck) return res.status(400).json({ success: false, error: 'Invalid Credentials' });
-        //setting up jwt using user id 
         const data = {
             user: {
                 id: user.id
@@ -82,12 +77,14 @@ app.post('/login', [
     }
 })
 
-app.get('fetchAllStatus', mid_val, async (req, res) => {
+app.get('/fetchAllStatus', mid_val, async (req, res) => {
     try {
+        console.log("hi");
         const fetched_status = [];
-        const foundUser = User.findById(req.user.id);
-        foundUser.followers.map((follower) => {
-            const foundStatus = Status.findOne({ author: follower });
+        const foundUser = await User.findById(req.user.id);
+        console.log(foundUser)
+        foundUser.followers.map(async (follower) => {
+            const foundStatus = await Status.findOne({ author: follower });
             fetched_status.push(foundStatus);
         });
         res.send(fetched_status);
@@ -96,10 +93,11 @@ app.get('fetchAllStatus', mid_val, async (req, res) => {
     }
 });
 
-app.post('/create_status', mid_val, async (req, res) => {
+app.post('/addStatus', mid_val, async (req, res) => {
     try {
         const { title, desc } = req.body;
-        const addedStatus = Status.create({ title, desc });
+        const author = req.user.id;
+        const addedStatus = await Status.create({ title, desc, author });
         res.send(addedStatus);
     } catch (error) {
         res.status(500).json('Internal Server Error');
@@ -116,7 +114,7 @@ app.put('/update_status/:statusId', async (req, res) => {
     }
 });
 
-app.delete('/delete_status/:statusId', async (req, res) => {
+app.delete('/deleteStatus/:statusId', async (req, res) => {
     try {
         const deletedStatus = Status.findByIdAndDelete(req.params.statusId);
         res.send(deletedStatus);
@@ -125,7 +123,7 @@ app.delete('/delete_status/:statusId', async (req, res) => {
     }
 });
 
-app.post('/search_user/:username', async (req, res) => {
+app.post('/searchUser/:username', async (req, res) => {
     try {
 
     } catch (error) {
