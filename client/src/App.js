@@ -1,6 +1,7 @@
 import './App.css';
 import Navbar from './components/Navbar';
 import { useState } from 'react';
+import StatusState from './components/context/status/StatusState';
 import {
   BrowserRouter as Router,
   Switch,
@@ -24,21 +25,23 @@ function App() {
   }
   return (
     <>
-      <Router>
-        <Navbar />
-        <Alert alert={alert}/>
-        <Switch>
-          <Route exact path="/">
-            <Home updateAlert={updateAlert}/>
-          </Route>
-          <Route exact path="/login">
-            <Login updateAlert={updateAlert}/>
-          </Route>
-          <Route exact path="/signup">
-            <Signup updateAlert={updateAlert}/>
-          </Route>
-        </Switch>
-      </Router>
+      <StatusState>
+        <Router>
+          <Navbar />
+          <Alert alert={alert} />
+          <Switch>
+            <Route exact path="/">
+              <Home updateAlert={updateAlert} />
+            </Route>
+            <Route exact path="/login">
+              <Login updateAlert={updateAlert} />
+            </Route>
+            <Route exact path="/signup">
+              <Signup updateAlert={updateAlert} />
+            </Route>
+          </Switch>
+        </Router>
+      </StatusState>
     </>
   );
 }

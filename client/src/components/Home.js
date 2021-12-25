@@ -7,7 +7,7 @@ function Home() {
                 <div className="row">
                     <div className="col-3 border border-2 rounded mx-1">
                         <h5 className='text-center text-primary'>User Details</h5>
-                        <div className="container d-flex my-100">
+                        <div className="d-flex my-100">
                             <ul>
                                 <li>
                                     Name:-
@@ -23,7 +23,8 @@ function Home() {
                     </div>
                     <div className="col-5 border border-2 rounded mx-1">
                         <h5 className='text-center text-primary'>Feed</h5>
-                        <div class="card-body border">
+                        <button className='btn btn-outline-success'>Create Post</button>
+                        <div class="card-body border my-2">
                             <h5 class="card-title">Special title treatment</h5>
                             <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
                             <a href="#" class="btn btn-primary">Go somewhere</a>

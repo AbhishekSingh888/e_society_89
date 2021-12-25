@@ -80,7 +80,6 @@ app.post('/login', [
 
 app.get('/fetchAllStatus', mid_val, async (req, res) => {
     try {
-        console.log("hi");
         const fetched_status = [];
         const foundUser = await User.findById(req.user.id);
         console.log(foundUser)
