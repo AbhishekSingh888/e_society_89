@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json({ extended: false }));
 app.use(cors());
 
-app.post('/creatUser', [
+app.post('/createUser', [
     body('name', 'name shoud of min 3 characters').isLength({ min: 3 }),
     body('email', 'enter a valid email').isEmail(),
     body('username', 'enter a valid username').isLength({ min: 7 }),
@@ -34,7 +34,8 @@ app.post('/creatUser', [
             let user = await User.create({
                 name: req.body.name,
                 email: req.body.email,
-                password: secPass
+                password: secPass,
+                username: req.body.username
             })
             const data = {
                 user: {
